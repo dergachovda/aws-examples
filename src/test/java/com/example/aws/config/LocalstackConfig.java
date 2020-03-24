@@ -1,10 +1,12 @@
 package com.example.aws.config;
 
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 
-@TestConfiguration
+@Profile("test")
+@Configuration
 public class LocalstackConfig {
 
     private static final LocalStackContainer.Service[] REQUIRED_SERVICES = {
