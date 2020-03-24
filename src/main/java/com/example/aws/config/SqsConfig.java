@@ -15,6 +15,7 @@ import org.springframework.cloud.aws.messaging.listener.SimpleMessageListenerCon
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
 
@@ -65,6 +66,7 @@ public class SqsConfig {
 
     @Bean
     @Primary
+    @Profile("!test")
     public AmazonSQSAsync amazonSQSAsync() {
         ClientConfiguration clientConfig = new ClientConfiguration()
                 .withMaxConnections(50);
