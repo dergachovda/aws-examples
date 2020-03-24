@@ -1,4 +1,4 @@
-package com.example.sqs.service;
+package com.example.aws.service;
 
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
@@ -14,10 +14,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,31 +29,10 @@ public class SqsServiceImpl implements SqsService {
 
     @Value("${init.messages.quantity}") private Integer quantity;
 
-    private AtomicInteger counter = new AtomicInteger(0);
-    private Instant start;
-
-    private void start(){
-        start = Instant.now();
-        log.info("Start polling");
-    }
-
-    private void stop(int n){
-        var time = Duration.between(start, Instant.now()).toMillis();
-        log.info("{} messages pulling was ended. It took {} ms", n, time);
-    }
-
-
     @SqsListener(value = "${sqs.queue.name}", deletionPolicy = SqsMessageDeletionPolicy.ALWAYS)
     public void getMessage(String message) {
-        if (counter.getAndIncrement() < 1) {
-            start();
-        }
         log.info("Message '{}' was received", message);
         messageProcessorService.execute(message);
-
-        if (counter.get() >= quantity) {
-            stop(quantity);
-        }
     }
     
     @Override

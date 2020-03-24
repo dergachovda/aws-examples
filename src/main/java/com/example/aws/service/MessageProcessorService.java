@@ -1,4 +1,4 @@
-package com.example.sqs.service;
+package com.example.aws.service;
 
 public interface MessageProcessorService {
     void execute(String message);
