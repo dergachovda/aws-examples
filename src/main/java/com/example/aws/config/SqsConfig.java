@@ -9,10 +9,14 @@ import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.aws.messaging.config.SimpleMessageListenerContainerFactory;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
+import org.springframework.cloud.aws.messaging.listener.SimpleMessageListenerContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+
+import javax.annotation.PostConstruct;
 
 @Configuration
 @RequiredArgsConstructor
@@ -41,6 +45,25 @@ public class SqsConfig {
     }
 
     @Bean
+    public SimpleMessageListenerContainerFactory simpleMessageListenerContainerFactory(AmazonSQSAsync amazonSqs) {
+        SimpleMessageListenerContainerFactory factory = new SimpleMessageListenerContainerFactory();
+        factory.setAmazonSqs(amazonSqs);
+        factory.setMaxNumberOfMessages(10);
+        return factory;
+    }
+
+    @Configuration
+    @RequiredArgsConstructor
+    static class SqsListenerConfig {
+        private final SimpleMessageListenerContainer simpleMessageListenerContainer;
+
+        @PostConstruct
+        public void customSQSListenerConfig() {
+            simpleMessageListenerContainer.setQueueStopTimeout(25000);
+        }
+    }
+
+    @Bean
     @Primary
     public AmazonSQSAsync amazonSQSAsync() {
         ClientConfiguration clientConfig = new ClientConfiguration()
@@ -57,28 +80,5 @@ public class SqsConfig {
 
         return sqsClient;
     }
-
-//    @Bean
-//    public AsyncTaskExecutor asyncTaskExecutor() {
-////        var taskExecutor = new SimpleAsyncTaskExecutor("my_te_");
-////        taskExecutor.setConcurrencyLimit(20);
-//        var taskExecutor = new ThreadPoolTaskExecutor();
-//        taskExecutor.setThreadNamePrefix("te_");
-//        taskExecutor.setCorePoolSize(25);
-//        taskExecutor.setMaxPoolSize(50);
-//        taskExecutor.initialize();
-//
-//        return taskExecutor;
-//    }
-//
-//    @Bean
-//    public SimpleMessageListenerContainerFactory simpleMessageListenerContainerFactory(AmazonSQSAsync amazonSqs/*, AsyncTaskExecutor asyncTaskExecutor*/) {
-//        SimpleMessageListenerContainerFactory factory = new SimpleMessageListenerContainerFactory();
-//        factory.setAmazonSqs(amazonSqs);
-//        factory.setAutoStartup(true);
-//        factory.setMaxNumberOfMessages(10);
-////        factory.setTaskExecutor(asyncTaskExecutor);
-//        return factory;
-//    }
 
 }
