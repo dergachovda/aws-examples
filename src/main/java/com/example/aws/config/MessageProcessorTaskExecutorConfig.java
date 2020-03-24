@@ -1,4 +1,4 @@
-package com.example.sqs.config;
+package com.example.aws.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +19,9 @@ public class MessageProcessorTaskExecutorConfig {
     Executor messageProcessorTaskExecutor(@Value("${message.executor.pool-size}") int poolSize) {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(poolSize);
-        threadPoolTaskExecutor.setMaxPoolSize(poolSize*2);
+        threadPoolTaskExecutor.setMaxPoolSize(poolSize * 2);
         threadPoolTaskExecutor.setWaitForTasksToCompleteOnShutdown(true);
-        threadPoolTaskExecutor.setQueueCapacity(75);
+        threadPoolTaskExecutor.setQueueCapacity(poolSize * 4);
         threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         threadPoolTaskExecutor.initialize();
         return threadPoolTaskExecutor;

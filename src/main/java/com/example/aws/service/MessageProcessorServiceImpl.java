@@ -1,4 +1,4 @@
-package com.example.sqs.service;
+package com.example.aws.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
