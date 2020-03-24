@@ -5,10 +5,10 @@ name: Java CI
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  push:
-    branches: [ master, development ]
-  pull_request:
-    branches: [ master, development ]
+#  push:
+#    branches: [ master, development ]
+#  pull_request:
+#    branches: [ master, development ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
