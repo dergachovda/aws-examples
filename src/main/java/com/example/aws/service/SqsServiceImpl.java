@@ -1,9 +1,7 @@
 package com.example.aws.service;
 
 import com.amazonaws.services.sqs.AmazonSQSAsync;
-import com.amazonaws.services.sqs.model.CreateQueueRequest;
-import com.amazonaws.services.sqs.model.GetQueueUrlResult;
-import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
+import com.example.aws.utils.SqsUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +12,6 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,8 +23,6 @@ public class SqsServiceImpl implements SqsService {
     private final MessageProcessorService messageProcessorService;
 
     @Value("${sqs.queue.name}") private String queue;
-
-    @Value("${init.messages.quantity}") private Integer quantity;
 
     @SqsListener(value = "${sqs.queue.name}", deletionPolicy = SqsMessageDeletionPolicy.ALWAYS)
     public void getMessage(String message) {
@@ -42,30 +37,6 @@ public class SqsServiceImpl implements SqsService {
 
     @PostConstruct
     public void init() {
-        validateQueue();
-//        addMessages();
-    }
-
-    private void addMessages() {
-        log.info("Start adding messages");
-        for(int i = 1; i <= quantity; i++) {
-            var message = "msg_" + i;
-            sendMessage(message);
-        }
-        log.info("{} messages were sent", quantity);
-    }
-
-    private void validateQueue() {
-        try {
-            GetQueueUrlResult queueUrlResult = sqsClient.getQueueUrl(queue);
-            if (Objects.nonNull(queueUrlResult.getQueueUrl())) {
-                var queueUrl = queueUrlResult.getQueueUrl();
-                log.info("Queue {} already exists", queueUrl);
-            }
-        } catch (QueueDoesNotExistException e) {
-            CreateQueueRequest createQueueRequest = new CreateQueueRequest(queue);
-            var queueUrl = sqsClient.createQueue(createQueueRequest).getQueueUrl();
-            log.info("Queue {} created successfully", queueUrl);
-        }
+        SqsUtils.createQueue(sqsClient, queue);
     }
 }
