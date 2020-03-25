@@ -27,8 +27,6 @@ public class SqsServiceImpl implements SqsService {
 
     @Value("${sqs.queue.name}") private String queue;
 
-    @Value("${init.messages.quantity}") private Integer quantity;
-
     @SqsListener(value = "${sqs.queue.name}", deletionPolicy = SqsMessageDeletionPolicy.ALWAYS)
     public void getMessage(String message) {
         log.info("Message '{}' was received", message);
@@ -43,16 +41,6 @@ public class SqsServiceImpl implements SqsService {
     @PostConstruct
     public void init() {
         validateQueue();
-//        addMessages();
-    }
-
-    private void addMessages() {
-        log.info("Start adding messages");
-        for(int i = 1; i <= quantity; i++) {
-            var message = "msg_" + i;
-            sendMessage(message);
-        }
-        log.info("{} messages were sent", quantity);
     }
 
     private void validateQueue() {
