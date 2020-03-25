@@ -11,6 +11,7 @@ public class LocalstackConfig {
 
     private static final LocalStackContainer.Service[] REQUIRED_SERVICES = {
             LocalStackContainer.Service.SQS,
+            LocalStackContainer.Service.SNS,
     };
 
     private LocalStackContainer localStackContainer;
